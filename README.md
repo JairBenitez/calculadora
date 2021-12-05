@@ -1,24 +1,22 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Aplicacion en Rails 6
 
-Things you may want to cover:
+* Ruby version 2.6
 
-* Ruby version
+* Database no requerida
 
-* System dependencies
+* Use ''bunlde install' para instalar las gemas necesarias
 
-* Configuration
+* Use ''rails test' para ejecutar las pruebas unitarias
 
-* Database creation
 
-* Database initialization
+Características
 
-* How to run the test suite
+* Obtiene el precio de crypto monedas Bitcoin y Ethereum
 
-* Services (job queues, cache servers, search engines, etc.)
+* Calcula el cuantas crypoto monedas se pueden comprar con el monto de USD (dollares) dado.
 
-* Deployment instructions
+* Calcula una ganancias de 5% (BTC) y 3% (ETH) menusal por el monto ingresado.
 
-* ...
+* Muestra la cantidad de ganancias de los meses acumulados. 
