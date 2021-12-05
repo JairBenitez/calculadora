@@ -1,85 +1,113 @@
-<p id="notice"><%= notice %></p>
 
-<h1>Calculadora de inversión</h1>
-
-<%= form_tag cotizadores_path do |f| %>
-  <p>
-    <%= text_field_tag :monto_usd, @monto_usd %>
-  </p>
-  <p>
-    <%= select_tag :meses, options_for_select([ "6", "12", "18", "24"], @meses.to_s) %>
-  </p>
-  <p>
-    <%= submit_tag 'Calcular' %>
-  </p>
-<% end %>
-
-<p>
-  precio bitcoin: <%= number_to_currency @cotizador.precio_bitcoin %>
-</p>
-
-<p>
-  precio ethereum: <%= number_to_currency @cotizador.precio_ethereum %>
-</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Mes</th>
-      <th>Inversion USD</th>
-      <th>Bitcoin</th>
-      <th>Ganacia 5%</th>
-      <th>Total BTC</th>
-      <th>Total USD</th>
-      <th>Acumulado USD</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% (1..@cotizador.meses).each do |mes| %>
-      <tr>
-        <td><%= mes %></td>
-        <td><%= number_to_currency @monto_usd %></td>
-        <td><%= number_with_precision(@cotizador.info_btc[mes][:monedas], precision: 6) %></td>
-        <td><%= number_with_precision(@cotizador.info_btc[mes][:ganancia], precision: 6) %></td>
-        <td><%= number_with_precision(@cotizador.info_btc[mes][:total_crypto], precision: 6) %></td>
-        <td><%= number_to_currency @cotizador.info_btc[mes][:total_usd] %></td>
-        <td><%= number_to_currency @cotizador.info_btc[mes][:total_usd_acum] %></td>
-      </tr>
+<h2>Calculadora de inversión</h2>
+<hr>
+<div class="row">
+  <div class="col-lg-6 text-right pt-4">
+    <h5>
+      precio bitcoin: <%= number_to_currency @cotizador.precio_bitcoin %>
+    </h5>
+    <h5>
+      precio ethereum: <%= number_to_currency @cotizador.precio_ethereum %>
+    </h5>
+  </div>
+  <div class="col-lg-6">
+    <%= form_tag cotizadores_path do |f| %>
+      <div class="row">
+        <div class="col-md-5"></div>
+        <div class="col-md-2 form-group">
+          <label class="form-label mt-4">Meses</label>
+          <%= select_tag :meses, options_for_select([ "6", "12", "18", "24"], @meses.to_s), { class: 'form-select' } %>
+        </div>
+        <div class="col-md-3 form-group">
+          <label class="form-label mt-4">Inversión USD</label>
+          <%= text_field_tag :monto_usd, @monto_usd, {class: 'form-control'} %>
+        </div>
+        <div class="col-md-2 form-group pt-4">
+          <%= submit_tag 'Calcular', class: 'btn btn-primary mt-4' %>
+        </div>
+      </div>
     <% end %>
-  </tbody>
-</table>
+  </div>
+</div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Mes</th>
-      <th>Inversion USD</th>
-      <th>Ethereum</th>
-      <th>Ganacia 3%</th>
-      <th>Total ETH</th>
-      <th>Total USD</th>
-      <th>Acumulado USD</th>
-    </tr>
-  </thead>
+<div class="row mt-4">
+  <div class="col-lg-6">
+    <h4>Bitcoin</h4> 
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Mes</th>
+          <th>Inversion USD</th>
+          <th>Bitcoin</th>
+          <th>Ganaincia 5%</th>
+          <th>Total BTC</th>
+          <th>Total USD</th>
+          <th>Acumulado USD</th>
+        </tr>
+      </thead>
 
-  <tbody>
-    <% (1..@cotizador.meses).each do |mes| %>
-      <tr>
-        <td><%= mes %></td>
-        <td><%= number_to_currency @monto_usd %></td>
-        <td><%= number_with_precision(@cotizador.info_eth[mes][:monedas], precision: 6) %></td>
-        <td><%= number_with_precision(@cotizador.info_eth[mes][:ganancia], precision: 6) %></td>
-        <td><%= number_with_precision(@cotizador.info_eth[mes][:total_crypto], precision: 6) %></td>
-        <td><%= number_to_currency @cotizador.info_eth[mes][:total_usd] %></td>
-        <td><%= number_to_currency @cotizador.info_eth[mes][:total_usd_acum] %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+      <tbody>
+        <% (1..@cotizador.meses).each do |mes| %>
+          <tr>
+            <td><%= mes %></td>
+            <td class="text-end"><%= number_to_currency @monto_usd %></td>
+            <td class="text-end"><%= number_with_precision(@cotizador.info_btc[mes][:monedas], precision: 6) %></td>
+            <td class="text-end"><%= number_with_precision(@cotizador.info_btc[mes][:ganancia], precision: 6) %></td>
+            <td class="text-end"><%= number_with_precision(@cotizador.info_btc[mes][:total_crypto], precision: 6) %></td>
+            <td class="text-end"><%= number_to_currency @cotizador.info_btc[mes][:total_usd] %></td>
+            <td class="text-end"><%= number_to_currency @cotizador.info_btc[mes][:total_usd_acum] %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <div class="row">
+      <div class="col-lg-1">
+        <%= link_to 'json', exporta_btc_cotizadores_path(format: :json, meses: @meses, monto_usd: @monto_usd), class:'btn btn-outline-secondary btn-sm' %>
+      </div>
+      <div class="col-lg-1">
+        <%= link_to 'csv', exporta_btc_cotizadores_path(format: :csv, meses: @meses, monto_usd: @monto_usd), class:'btn btn-outline-secondary btn-sm' %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <h4>Ethereum</h4> 
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Mes</th>
+          <th>Inversion USD</th>
+          <th>Ethereum</th>
+          <th>Ganancia 3%</th>
+          <th>Total ETH</th>
+          <th>Total USD</th>
+          <th>Acumulado USD</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% (1..@cotizador.meses).each do |mes| %>
+          <tr>
+            <td><%= mes %></td>
+            <td class="text-end"><%= number_to_currency @monto_usd %></td>
+            <td class="text-end"><%= number_with_precision(@cotizador.info_eth[mes][:monedas], precision: 6) %></td>
+            <td class="text-end"><%= number_with_precision(@cotizador.info_eth[mes][:ganancia], precision: 6) %></td>
+            <td class="text-end"><%= number_with_precision(@cotizador.info_eth[mes][:total_crypto], precision: 6) %></td>
+            <td class="text-end"><%= number_to_currency @cotizador.info_eth[mes][:total_usd] %></td>
+            <td class="text-end"><%= number_to_currency @cotizador.info_eth[mes][:total_usd_acum] %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <div class="row">
+      <div class="col-lg-1">
+        <%= link_to 'json', exporta_eth_cotizadores_path(format: :json, meses: @meses, monto_usd: @monto_usd), class:'btn btn-outline-secondary btn-sm' %>
+      </div>
+      <div class="col-lg-1">
+        <%= link_to 'csv', exporta_eth_cotizadores_path(format: :csv, meses: @meses, monto_usd: @monto_usd), class:'btn btn-outline-secondary btn-sm' %>
+      </div>
+    </div>
+  </div>
+</div>
 
 <br>
-<%= link_to 'json', exporta_btc_cotizadores_path(format: :json, meses: @meses, monto_usd: @monto_usd) %>
-<%= link_to 'csv', exporta_btc_cotizadores_path(format: :csv, meses: @meses, monto_usd: @monto_usd) %>
-<%= link_to 'json', exporta_eth_cotizadores_path(format: :json, meses: @meses, monto_usd: @monto_usd) %>
-<%= link_to 'csv', exporta_eth_cotizadores_path(format: :csv, meses: @meses, monto_usd: @monto_usd) %>
