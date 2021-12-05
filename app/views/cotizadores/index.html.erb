@@ -1,0 +1,81 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Calculadora de inversión</h1>
+
+<%= form_tag cotizadores_path do |f| %>
+  <p>
+    <%= text_field_tag :monto_usd, @monto_usd %>
+  </p>
+  <p>
+    <%= select_tag :meses, options_for_select([ "6", "12", "18", "24"], @meses.to_s) %>
+  </p>
+  <p>
+    <%= submit_tag 'Calcular' %>
+  </p>
+<% end %>
+
+<p>
+  precio bitcoin: <%= number_to_currency @cotizador.precio_bitcoin %>
+</p>
+
+<p>
+  precio ethereum: <%= number_to_currency @cotizador.precio_ethereum %>
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Mes</th>
+      <th>Inversion USD</th>
+      <th>Bitcoin</th>
+      <th>Ganacia 5%</th>
+      <th>Total BTC</th>
+      <th>Total USD</th>
+      <th>Acumulado USD</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% (1..@cotizador.meses).each do |mes| %>
+      <tr>
+        <td><%= mes %></td>
+        <td><%= number_to_currency @monto_usd %></td>
+        <td><%= number_with_precision(@cotizador.info_btc[mes][:monedas], precision: 6) %></td>
+        <td><%= number_with_precision(@cotizador.info_btc[mes][:ganancia], precision: 6) %></td>
+        <td><%= number_with_precision(@cotizador.info_btc[mes][:total_crypto], precision: 6) %></td>
+        <td><%= number_to_currency @cotizador.info_btc[mes][:total_usd] %></td>
+        <td><%= number_to_currency @cotizador.info_btc[mes][:total_usd_acum] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Mes</th>
+      <th>Inversion USD</th>
+      <th>Ethereum</th>
+      <th>Ganacia 3%</th>
+      <th>Total ETH</th>
+      <th>Total USD</th>
+      <th>Acumulado USD</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% (1..@cotizador.meses).each do |mes| %>
+      <tr>
+        <td><%= mes %></td>
+        <td><%= number_to_currency @monto_usd %></td>
+        <td><%= number_with_precision(@cotizador.info_eth[mes][:monedas], precision: 6) %></td>
+        <td><%= number_with_precision(@cotizador.info_eth[mes][:ganancia], precision: 6) %></td>
+        <td><%= number_with_precision(@cotizador.info_eth[mes][:total_crypto], precision: 6) %></td>
+        <td><%= number_to_currency @cotizador.info_eth[mes][:total_usd] %></td>
+        <td><%= number_to_currency @cotizador.info_eth[mes][:total_usd_acum] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
