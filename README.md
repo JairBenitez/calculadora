@@ -6,9 +6,9 @@ Aplicacion en Rails 6
 
 * Database no requerida
 
-* Use ''bunlde install' para instalar las gemas necesarias
+* Use 'bundle install' para instalar las gemas necesarias
 
-* Use ''rails test' para ejecutar las pruebas unitarias
+* Use 'rails test' para ejecutar las pruebas unitarias
 
 
 Características
