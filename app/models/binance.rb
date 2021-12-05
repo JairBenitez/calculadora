@@ -1,17 +1,17 @@
 require 'rest-client'
 require 'json'
+require 'csv'
 
 # Clase que genera el informe de inversion
 # Unitliza la API de api.binance.com
 # url definida en config/initializer/api_url.rb
 class Binance
-
   # Constructor de la clase que asigna
   # - monto de inversión
   # - meses de alcance del reporte
   # - crypto monedas para cada reporte
   #
-  # Genera los reportes requeridos 
+  # Genera los reportes requeridos
   def initialize(monto_usd, meses = 12, tipos = ['btc', 'eth'])
     @monto_usd = monto_usd.to_f
     @meses = meses.to_i
@@ -19,7 +19,7 @@ class Binance
 
     genera_informe_de_inversion
   end
-  
+
   # Precio obtenido de la API
   def precio_bitcoin
     @btc
@@ -34,7 +34,7 @@ class Binance
   def info_btc
     @info_btc
   end
-  
+
   # Obttiene reporte de inversion de Ethereum
   def info_eth
     @info_eth
@@ -45,6 +45,65 @@ class Binance
     @meses
   end
 
+  # exporta detalle de inversion Ethereum generada  
+  def info_btc_to_csv
+    attributes = [
+      'Mes',
+      'Inversion USD',
+      'Bitcoin',
+      'Ganancia 5%',
+      'Total BTC',
+      'Total USD',
+      'Acumulado USD'
+    ]
+ 
+
+    CSV.generate(headers: true) do |csv|
+      csv << attributes
+
+      (1..@meses).each do |mes|
+        csv << [
+          mes,
+          @monto_usd,
+          @info_btc[mes][:monedas],
+          @info_btc[mes][:ganancia],
+          @info_btc[mes][:total_crypto],
+          @info_btc[mes][:total_usd],
+          @info_btc[mes][:total_usd_acum]
+        ]
+      end
+    end
+  end
+
+  # exporta detalle de inversion Bitcoin generada  
+  def info_eth_to_csv
+    attributes = [
+      'Mes',
+      'Inversion USD',
+      'Ethereum',
+      'Ganancia 3%',
+      'Total BTC',
+      'Total USD',
+      'Acumulado USD'
+    ]
+
+    CSV.generate(headers: true) do |csv|
+      csv << attributes
+
+      (1..@meses).each do |mes|
+        csv << [
+          mes,
+          @monto_usd,
+          @info_eth[mes][:monedas],
+          @info_eth[mes][:ganancia],
+          @info_eth[mes][:total_crypto],
+          @info_eth[mes][:total_usd],
+          @info_eth[mes][:total_usd_acum]
+        ]
+      end
+    end
+  end
+
   private
 
   # Obtiene precios y calcula reporte de ganancias por moneda
@@ -52,14 +111,14 @@ class Binance
     @info_btc = {}
     @info_eth = {}
     @mes = 0
-    
+
     obtiene_precios
     calcula_inversion
   end
 
   # Obiente precios en USD de moneda
   # aqui se debe agregar la obtención de precios de otras
-  # crypto monedas si se requiere en el futuro 
+  # crypto monedas si se requiere en el futuro
   def obtiene_precios
     obtiene_precio_bitcoin
     obtiene_precio_ethereum
@@ -69,13 +128,13 @@ class Binance
   # del mes y moneda
   def calcula_inversion
     if @mes == 0
-      @tipo = @tipos.pop  
+      @tipo = @tipos.pop
       @total_crypto_acum = 0
       @total_usd_acum = 0
     end
     @mes += 1
 
-    # 1 - Obtiene el precio actual 
+    # 1 - Obtiene el precio actual
     precio = obtiene_precio
     # 2 - Calcula número de mondeas que puede comprar
     cryptos = (@monto_usd / precio)
@@ -85,11 +144,11 @@ class Binance
     total_crypto = cryptos + ganancia_crypto
     # 5 - Calcula total de gananacia en usd
     total_usd = total_crypto * precio
-    
-    # 6 - Calcula ganacias de meses acumulados 
+
+    # 6 - Calcula ganacias de meses acumulados
     @total_crypto_acum += total_crypto
     @total_usd_acum += total_usd
-    
+
     obj = {
       precio: precio,
       monedas: cryptos,
@@ -99,12 +158,12 @@ class Binance
       total_crypto_acum: @total_crypto_acum,
       total_usd_acum: @total_usd_acum
     }
-    
-    @info_btc[@mes] = obj if @tipo == 'btc' 
-    @info_eth[@mes] = obj if @tipo == 'eth' 
 
-    if @mes < @meses 
-      calcula_inversion 
+    @info_btc[@mes] = obj if @tipo == 'btc'
+    @info_eth[@mes] = obj if @tipo == 'eth'
+
+    if @mes < @meses
+      calcula_inversion
     else
       unless @tipos.empty?
         @mes = 0
@@ -117,6 +176,7 @@ class Binance
   def obtiene_precio
     return @btc if @tipo == 'btc'
     return @eth if @tipo == 'eth'
+
     0
   end
 
@@ -124,6 +184,7 @@ class Binance
   def porcentaje_de_ganancia
     return 0.05 if @tipo == 'btc'
     return 0.03 if @tipo == 'eth'
+
     0
   end
 

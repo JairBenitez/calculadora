@@ -79,3 +79,7 @@
 </table>
 
 <br>
+<%= link_to 'json', exporta_btc_cotizadores_path(format: :json, meses: @meses, monto_usd: @monto_usd) %>
+<%= link_to 'csv', exporta_btc_cotizadores_path(format: :csv, meses: @meses, monto_usd: @monto_usd) %>
+<%= link_to 'json', exporta_eth_cotizadores_path(format: :json, meses: @meses, monto_usd: @monto_usd) %>
+<%= link_to 'csv', exporta_eth_cotizadores_path(format: :csv, meses: @meses, monto_usd: @monto_usd) %>
